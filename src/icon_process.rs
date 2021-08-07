@@ -47,7 +47,6 @@ impl TrayIconProcess {
         // https://docs.rs/winapi/*/x86_64-pc-windows-msvc/winapi/um/wincon/fn.GetConsoleWindow.html
         let h_wnd = winapi::um::wincon::GetConsoleWindow;  //gets the current console window handle
 
-
         //System Tray Icon support - here it is
         let wm_mymessage = WM_APP + 100; //prep WM_MYMESSAGE
         let tooltip = "Server".to_string(); //record tooltip words for the icon

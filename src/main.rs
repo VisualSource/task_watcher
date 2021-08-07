@@ -19,7 +19,7 @@ use icon_process::TrayIconProcess;
 
 use status_handler::{get_status,get_bedrock_status};
 
-
+//START "TaskWatcher" ./task_watcher.exe -WindowStyle Hidden -RedirectStandardOutput "./service.log"
 fn get_current_tasks(task: &String) -> Result<Vec<String>,String>{
     match Command::new("tasklist").output() {
         Ok(result) => {
