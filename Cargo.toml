@@ -11,4 +11,7 @@ winapi = { version = "*", features = ["wincon","shellapi","ntdef"] }
 ctrlc = { version = "3.1.9", features = ["termination"] }
 json = "0.12.4"
 craftping = "0.2.1"
-windows-service = { git = "https://github.com/mullvad/windows-service-rs" }
+chrono = "0.4.19"
+rand = "0.8.4"
+hex = "0.4.3"
+byteorder = "1.4.3"

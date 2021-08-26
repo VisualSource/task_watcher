@@ -1,7 +1,7 @@
 {
  "watch_process": "firefox.exe",
   "max_processes": 2,
-  "main_thread_sleep_sec": 15,
+  "main_thread_sleep_sec": 40,
   "debug": true,
   "watchers": [
     {
@@ -11,8 +11,8 @@
     },
     { 
       "type": "bedrock", 
-      "ip": "192.168.1.164", 
-      "port": 19332 
+      "ip": "192.168.1.5", 
+      "port": 19132 
     }
   ]
 }

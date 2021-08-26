@@ -8,9 +8,16 @@ use std::os::windows::ffi::OsStrExt;
 
 use crate::icon_handler::TrayIcon;
 
+#[derive(PartialEq,Debug,Clone,Copy)]
+pub enum IconState {
+    Online,
+    Offline
+}
+
 pub struct TrayIconProcess {
     nid: NOTIFYICONDATAW,
-    pid: String,
+    //pid: String,
+    pub icon: IconState,
     pub status: bool
 }
 
@@ -18,8 +25,12 @@ impl TrayIconProcess {
     pub fn kill(&mut self){
         unsafe{ Shell_NotifyIconW(NIM_DELETE, &mut self.nid) };
     }
-    pub fn set_icon(&mut self, icon_buffer: &'static [u8]){
+    pub fn set_icon(&mut self, icon_buffer: &'static [u8], state: IconState){
 
+        if self.icon == state {
+            return;
+        }
+        
         let icon = match TrayIcon::load_icon(icon_buffer, None, None) {
             Ok(icon) => icon.hicon,
             Err(err)=>{
@@ -27,7 +38,7 @@ impl TrayIconProcess {
                 unsafe { LoadIconW(null_mut(),IDI_APPLICATION) }
             }
         };
-
+        self.icon = state;
         self.nid.hIcon = icon;
 
         unsafe{ Shell_NotifyIconW(NIM_MODIFY, &mut self.nid) }; //updates system tray icon
@@ -42,14 +53,14 @@ impl TrayIconProcess {
         unsafe{ Shell_NotifyIconW(NIM_MODIFY, &mut self.nid) }; //updates system tray icon
 
     }
-    pub fn create(icon_buffer: &'static [u8], id: u32, pid: String) -> Result<TrayIconProcess,String>{
+    pub fn create(icon_buffer: &'static [u8], id: u32, _pid: String) -> Result<TrayIconProcess,String>{
         // to navigate calling with the winapi "crate" use the search function at link
         // https://docs.rs/winapi/*/x86_64-pc-windows-msvc/winapi/um/wincon/fn.GetConsoleWindow.html
         let h_wnd = winapi::um::wincon::GetConsoleWindow;  //gets the current console window handle
 
         //System Tray Icon support - here it is
         let wm_mymessage = WM_APP + 100; //prep WM_MYMESSAGE
-        let tooltip = "Server".to_string(); //record tooltip words for the icon
+        let tooltip = "Unknown Server".to_string(); //record tooltip words for the icon
         let mut tooltip_int: [u16; 128] = [0; 128]; //fill with 0's
         let tooltip_step: &str = &*tooltip; //these two types of strings
         let tooltip_os = OsStr::new(tooltip_step); //convert to OS string format or something
@@ -80,6 +91,6 @@ impl TrayIconProcess {
 
         unsafe{ Shell_NotifyIconW(NIM_ADD, &mut nid) }; //shows the icon
 
-        Ok(TrayIconProcess{ nid: nid, pid, status: false })
+        Ok(TrayIconProcess{ nid: nid, /*pid,*/ status: false, icon: IconState::Offline })
     }
 }

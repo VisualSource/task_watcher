@@ -15,11 +15,11 @@ use std::process::Command;
 use std::str;
 
 use config::{Config, WatchType};
-use icon_process::TrayIconProcess;
+use icon_process::{TrayIconProcess,IconState};
 
 use status_handler::{get_status,get_bedrock_status};
 
-//START "TaskWatcher" ./task_watcher.exe -WindowStyle Hidden -RedirectStandardOutput "./service.log"
+
 fn get_current_tasks(task: &String) -> Result<Vec<String>,String>{
     match Command::new("tasklist").output() {
         Ok(result) => {
@@ -40,8 +40,8 @@ fn get_current_tasks(task: &String) -> Result<Vec<String>,String>{
         }
     }
 }
-
-pub fn main() {
+///START "TaskWatcher" ./task_watcher.exe -WindowStyle Hidden -RedirectStandardOutput "./service.log"
+fn main() {
     let config = Config::load();
   
     let running = Arc::new(AtomicBool::new(true));
@@ -90,11 +90,15 @@ pub fn main() {
                         let status = get_bedrock_status(config.watchers[i].ip.as_str(), config.watchers[i].port);
                         if status.0 != handles[i].status {
                             if status.0 {
+                                if handles[i].icon != IconState::Online {
+                                    handles[i].set_icon(icon_online,IconState::Online);
+                                }
                                 handles[i].set_tooltip(format!("Bedrock server | Players  {}",status.1).to_string());
-                                handles[i].set_icon(icon_online);
                             }else {
-                                handles[i].set_tooltip("Bedrock server | Offline".to_string());
-                                handles[i].set_icon(icon_offline);
+                                if handles[i].icon != IconState::Offline {
+                                    handles[i].set_tooltip("Bedrock server | Offline".to_string());
+                                    handles[i].set_icon(icon_offline,IconState::Offline);
+                                }
                             }
                         }
                     }
@@ -102,19 +106,21 @@ pub fn main() {
                         let status = get_status(config.watchers[i].ip.as_str(), config.watchers[i].port);
                         if status.0 != handles[i].status {
                             if status.0 {
+                                if handles[i].icon != IconState::Online {
+                                    handles[i].set_icon(icon_online,IconState::Online);
+                                }
                                 handles[i].set_tooltip(format!("Java Server | Players {}",status.1).to_string());
-                                handles[i].set_icon(icon_online);
                             }else {
-                                handles[i].set_tooltip("Java Server | Offline".to_string());
-                                handles[i].set_icon(icon_offline);
+                                if handles[i].icon != IconState::Offline {
+                                    handles[i].set_tooltip("Java Server | Offline".to_string());
+                                    handles[i].set_icon(icon_offline,IconState::Offline);
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        
-
         thread::sleep(time::Duration::from_secs(config.main_thread_sleep_sec));
     }
     println!("Kill Main Task Process");
