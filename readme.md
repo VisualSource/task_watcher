@@ -14,7 +14,7 @@
 #### debug 
 | Default | Required | Type |  Description | 
 | ------ | ------ | ------ | ------ |
-| false | No  | Boolean | Rrint debug info.
+| false | No  | Boolean | Print debug info.
 #### main_thread_sleep_sec 
 | Default | Required | Type |  Description | 
 | ------ | ------ | ------ | ------ |
@@ -38,7 +38,7 @@
 #### port
 | Default | Required | Type |  Description | 
 | ------ | ------ | ------ | ------ |
-| None | Yes | Int | The port of the server. (java default is 25565) and (bedrock default is 19332)
+| None | Yes | Int | The port of the server. (java default is 25565) and (bedrock default is 19132)
 ### Example
 
 ```json
@@ -56,7 +56,7 @@
     { 
       "type": "bedrock", 
       "ip": "192.168.1.164", 
-      "port": 19332 
+      "port": 19132 
     }
   ]
 }
